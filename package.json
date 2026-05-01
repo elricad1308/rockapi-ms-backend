@@ -1,0 +1,24 @@
+{
+  "name": "rockapi-ms-backend",
+  "version": "1.0.0",
+  "description": "backend microservice for rockapi",
+  "keywords": [
+    "rock",
+    "api"
+  ],
+  "homepage": "https://github.com/elricad1308/rockapi-ms-backend#readme",
+  "bugs": {
+    "url": "https://github.com/elricad1308/rockapi-ms-backend/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elricad1308/rockapi-ms-backend.git"
+  },
+  "license": "ISC",
+  "author": "Jose Aguilar-Canepa",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

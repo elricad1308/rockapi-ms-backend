@@ -1,0 +1,28 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Experiment {
+  id          Int               @id @default(autoincrement())
+  name        String            @unique
+  sourcefile  String
+  createdAt   DateTime
+  data        ExperimentData[]
+}
+
+model ExperimentData {
+  id            Int         @id @default(autoincrement())
+  strain        Decimal
+  stress        Decimal
+  experiment    Experiment  @relation(fields: [experimentId], references: [id])
+  experimentId  Int
+}

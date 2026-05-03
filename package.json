@@ -19,21 +19,29 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon --exec \"npx ts-node\" index.ts",
+    "build": "rm -rf build && tsc",
+    "dev": "nodemon build/src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
     "@types/node": "^25.6.0",
     "nodemon": "^3.1.14",
-    "prisma": "^6.19.3",
+    "prisma": "^7.8.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.21.0",
     "typescript": "^6.0.3"
   },
   "dependencies": {
+    "@fastify/jwt": "^10.0.0",
+    "@fastify/multipart": "^10.0.0",
     "@prisma/adapter-mariadb": "^7.8.0",
     "@prisma/client": "^7.8.0",
+    "bcrypt": "^6.0.0",
+    "csv-parser": "^3.2.0",
     "dotenv": "^17.4.2",
-    "fastify": "^5.8.5"
+    "fastify": "^5.8.5",
+    "fastify-type-provider-zod": "^6.1.0",
+    "zod": "^4.4.2"
   }
 }

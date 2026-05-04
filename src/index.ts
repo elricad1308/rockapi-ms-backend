@@ -4,10 +4,14 @@ import { serializerCompiler, validatorCompiler } from 'fastify-type-provider-zod
 import fjwt, { type FastifyJWT } from '@fastify/jwt'
 import { testRoutes } from './routes/test.routes.js'
 import { userRoutes } from './routes/user.routes.js'
+import cors from '@fastify/cors'
 
 const server: FastifyInstance = Fastify({ logger: true });
 const port: number = parseInt(process.env.APP_PORT ?? '3000');
 const jwt_secret: string = process.env.JWT_SECRET ?? ''
+
+// cors
+server.register(cors)
 
 // jwt
 server.register(fjwt, { secret: jwt_secret })

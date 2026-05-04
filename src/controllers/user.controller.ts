@@ -45,5 +45,14 @@ export const createUserHandler = async(request: FastifyRequest<{ Body: CreateUse
     return reply.code(201).send({ id, name, email })
   } catch (e) {
     return reply.code(500).send(e)
+  }  
+}
+
+export const validateHandler = async(request: FastifyRequest, reply: FastifyReply) => {
+  try {
+    await request.jwtVerify()
+    reply.status(200).send({ message: 'ok' })
+  } catch (err) {
+    reply.code(403).send(err)
   }
 }

@@ -52,3 +52,12 @@ export const createExperimentZodSchema = {
     200: createExperimentResponseSchema
   }
 }
+
+export const listExperimentZodSchema = {
+  response: {
+    200: z.array(z.object({
+      id: z.number(),
+      name: z.string()
+    }))
+  }
+}

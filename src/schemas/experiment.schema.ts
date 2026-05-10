@@ -1,4 +1,30 @@
 import { z } from 'zod'
+import { Decimal } from 'decimal.js'
+
+const fetchExperimentSchema = z.object({
+  id: z.string()
+})
+
+export type FetchExperimentInput = z.infer<typeof fetchExperimentSchema>
+
+const fetchExperimentResponseSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  createdAt: z.date(),
+  sourcefile: z.string(),
+  data: z.array(z.object({
+    id: z.number(),
+    strain: z.any().transform((val) => new Decimal(val)),
+    stress: z.any().transform((val) => new Decimal(val))
+  }))
+})
+
+export const fetchExperimentZodSchema = {
+  params: fetchExperimentSchema,
+  response: {
+    200: fetchExperimentResponseSchema
+  }
+}
 
 const createExperimentSchema = z.object({
   name: z.object({

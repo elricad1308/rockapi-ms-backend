@@ -58,7 +58,7 @@ server.setSerializerCompiler(serializerCompiler)
 // routes
 server.register(testRoutes)
 server.register(userRoutes, { prefix: '/user' })
-server.register(experimentRoutes, { prefix: '/experiment' })
+server.register(experimentRoutes, { prefix: '/samples' })
 
 // Gracefully shutdowns server to avoid data corruption
 const listeners = ['SIGINT', 'SIGTERM']

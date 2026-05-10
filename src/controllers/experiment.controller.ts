@@ -1,22 +1,58 @@
-import { type FastifyReply, type FastifyRequest } from 'fastify';
-import { type CreateExperimentInput } from '../schemas/experiment.schema.js'
 import csv from 'csv-parser'
 import { pipeline } from 'node:stream'
+import { type FastifyReply, type FastifyRequest } from 'fastify';
+import { prisma } from '../config/prisma.js'
+import { Decimal } from 'decimal.js'
+import { type FetchExperimentInput } from '../schemas/experiment.schema.js';
 
+interface Row {
+  Strain: string,
+  Stress: string
+}
+
+export const fetchHandler = async (request: FastifyRequest<{ Params: FetchExperimentInput}>, reply: FastifyReply) => {
+  const { id } = request.params
+  const experiment = await prisma.experiment.findUnique({
+    where: {
+      id: parseInt(id)
+    },
+    include: {
+      data: true
+    }
+  })
+
+  return reply.status(200).send(experiment)
+}
+
+export const listHandler = async (request: FastifyRequest, reply: FastifyReply) => {
+  const experiments = await prisma.experiment.findMany({
+    include: {
+      data: false
+    }
+  })
+
+  const response = experiments.map(element => {
+    return { id: element.id, name: element.name }
+  })
+
+  return reply.status(200).send(response)
+}
+
+// Handler for experiment upload /experiment/upload
 export const saveHandler = async (request: FastifyRequest, reply: FastifyReply) => {
   const parts = request.parts()
-  const results: Array<Array<string>> = []
+  const results: Array<Row> = []
   let fileStream: NodeJS.ReadableStream | null = null
   let experimentName: string | null = null
+  let fileName: string | null = null
 
   // Extract fields and files from multipart
   for await (const part of parts) {
-    reply.log.info('==== part ====')
-    reply.log.info(part)
     if (part.type === 'field' && part.fieldname === 'name') {
       experimentName = (part.value as any)
     } else if (part.type === 'file' && part.fieldname === 'file') {
       fileStream = part.file
+      fileName = part.filename
     }
   }
 
@@ -37,54 +73,40 @@ export const saveHandler = async (request: FastifyRequest, reply: FastifyReply) 
             resolve(results)
           }
         } 
-      ).on('data', (row: Array<string>) => {
+      ).on('data', (row: Row) => {
         results.push(row)
       })
     })
 
-    return reply.status(200).send({ message: `${results.length} records stored`})
+    // Saves experiment
+    const experiment = await prisma.experiment.create({
+      data: {
+        name: experimentName,
+        sourcefile: fileName ?? 'data.csv',
+        createdAt: new Date()
+      }
+    })
+    
+    const { id } = experiment
+
+    // Saves experiment data
+    const experimentData = results.map((element: Row) => {      
+      return { 
+        experimentId: id,
+        strain: new Decimal(element.Strain ?? ''),
+        stress: new Decimal(element.Stress ?? '')
+      }
+    })
+
+    const newData = await prisma.experimentData.createMany({
+      data: experimentData
+    })
+
+    return reply.status(200).send({ 
+      message: `${ newData.count } records stored`
+    })
   } catch (error) {
     request.log.error(error)
     return reply.status(500).send({ message: String(error) })
   }
-  /*const data = request.body.file
-  const results: Array<Array<string>> = []
-
-  console.debug('=== body.file ==== ')
-  console.debug(request.body.file.file)  
-
-  if (!data) {
-    return reply.status(400).send({ message: 'Missing file' })
-  }
-
-  try {
-    await new Promise((resolve, reject) => {
-      console.debug('=== entering pipeline ===')
-      pipeline(
-        data.file,
-        csv(), 
-        (err) => {
-          if (err) {
-            reply.log.error(`CSV pipeline failed: ${err}`)
-            reject(err)
-          }
-
-          reply.log.info('==== pipeline finished ====')
-          resolve(results)
-      })
-      .on('data', (row: Array<string>) => {
-        reply.log.info('===== pushing data =====')
-        results.push(row)
-      })
-      .on('end', () => {
-        reply.log.info('==== ending file processing =====')
-        resolve(results)
-      })
-    })
-
-    return reply.status(200).send({ message: `${results.length} records stored`})
-  } catch (error) {
-    request.log.error(error)
-    return reply.status(500).send({ message: error })
-  }*/
 }

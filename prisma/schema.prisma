@@ -11,19 +11,36 @@ datasource db {
 }
 
 model Experiment {
-  id          Int               @id @default(autoincrement())
-  name        String            @unique
-  sourcefile  String
-  createdAt   DateTime
-  data        ExperimentData[]
+  id          Int       @id @default(autoincrement())
+  name        String    @unique
+  samples     Sample[]
+  createdAt   DateTime  @default(now())
 }
 
-model ExperimentData {
+model Sample {
+  id            Int           @id @default(autoincrement())
+  name          String
+  sourcefile    String
+  experiment    Experiment    @relation(fields: [experimentId], references: [id])
+  experimentId  Int
+  epsilon_25    Decimal?
+  epsilon_50    Decimal?
+  epsilon_max   Decimal?
+  epsilon_u     Decimal?
+  sigma_25      Decimal?
+  sigma_50      Decimal?
+  sigma_max     Decimal?
+  sigma_u       Decimal?
+  data          SampleData[]
+  createdAt     DateTime      @default(now())
+}
+
+model SampleData {
   id            Int         @id @default(autoincrement())
   strain        Decimal
   stress        Decimal
-  experiment    Experiment  @relation(fields: [experimentId], references: [id])
-  experimentId  Int
+  sample        Sample      @relation(fields: [sampleId], references: [id])
+  sampleId      Int
 }
 
 model User {

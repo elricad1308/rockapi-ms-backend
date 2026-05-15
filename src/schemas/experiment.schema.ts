@@ -10,12 +10,11 @@ export type FetchExperimentInput = z.infer<typeof fetchExperimentSchema>
 const fetchExperimentResponseSchema = z.object({
   id: z.number(),
   name: z.string(),
-  createdAt: z.date(),
-  sourcefile: z.string(),
-  data: z.array(z.object({
+  createdAt: z.date(),  
+  samples: z.array(z.object({
     id: z.number(),
-    strain: z.any().transform((val) => new Decimal(val)),
-    stress: z.any().transform((val) => new Decimal(val))
+    name: z.string(),
+    sourcefile: z.string()    
   }))
 })
 
@@ -57,7 +56,8 @@ export const listExperimentZodSchema = {
   response: {
     200: z.array(z.object({
       id: z.number(),
-      name: z.string()
+      name: z.string(),
+      createdAt: z.date()
     }))
   }
 }

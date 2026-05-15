@@ -1,12 +1,13 @@
 import 'dotenv/config';
+import cors from '@fastify/cors'
 import Fastify, { type FastifyInstance, type RouteShorthandOptions, type FastifyRequest, type FastifyReply } from 'fastify';
 import { serializerCompiler, validatorCompiler } from 'fastify-type-provider-zod'
 import fjwt, { type FastifyJWT } from '@fastify/jwt'
 import multipart from '@fastify/multipart'
-import { experimentRoutes } from './routes/experiment.routes.js'
-import { testRoutes } from './routes/test.routes.js'
 import { userRoutes } from './routes/user.routes.js'
-import cors from '@fastify/cors'
+import { experimentRoutes } from './routes/experiment.routes.js'
+import { sampleRoutes } from './routes/sample.routes.js'
+
 
 const server: FastifyInstance = Fastify({ 
   logger: {
@@ -30,7 +31,6 @@ server.register(cors)
 // multipart (for file uploads)
 await server.register(multipart, {
   limits: {
-    files: 1,
     fileSize: 10 * 1024 * 1024
   }
 })
@@ -56,9 +56,9 @@ server.setValidatorCompiler(validatorCompiler)
 server.setSerializerCompiler(serializerCompiler)
 
 // routes
-server.register(testRoutes)
 server.register(userRoutes, { prefix: '/user' })
-server.register(experimentRoutes, { prefix: '/samples' })
+server.register(experimentRoutes, { prefix: '/experiment' })
+server.register(sampleRoutes, { prefix: '/sample' })
 
 // Gracefully shutdowns server to avoid data corruption
 const listeners = ['SIGINT', 'SIGTERM']

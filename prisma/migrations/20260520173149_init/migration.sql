@@ -13,6 +13,7 @@ CREATE TABLE `Sample` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
     `sourcefile` VARCHAR(191) NOT NULL,
+    `processed` BOOLEAN NOT NULL DEFAULT false,
     `experimentId` INTEGER NOT NULL,
     `epsilon_25` DECIMAL(65, 30) NULL,
     `epsilon_50` DECIMAL(65, 30) NULL,

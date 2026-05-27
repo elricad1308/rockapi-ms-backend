@@ -21,6 +21,7 @@ model Sample {
   id            Int           @id @default(autoincrement())
   name          String
   sourcefile    String
+  processed     Boolean       @default(false)
   experiment    Experiment    @relation(fields: [experimentId], references: [id])
   experimentId  Int
   epsilon_25    Decimal?

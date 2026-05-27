@@ -1,6 +1,6 @@
 import { type FastifyInstance } from 'fastify'
 import { fetchExperimentZodSchema, listExperimentZodSchema } from '../schemas/experiment.schema.js'
-import { fetchHandler, listHandler, saveHandler } from '../controllers/experiment.controller.js'
+import { fetchHandler, listHandler, saveHandler, processFilesHandler } from '../controllers/experiment.controller.js'
 import { type ZodTypeProvider } from 'fastify-type-provider-zod'
 
 export async function experimentRoutes(fastify: FastifyInstance) {
@@ -25,6 +25,13 @@ export async function experimentRoutes(fastify: FastifyInstance) {
     url: '/save',
     handler: saveHandler,
     onRequest: fastify.authenticate
-  })  
+  })
+
+  fastify.route({
+    method: 'get',
+    url: '/process/:id',
+    sse: true,
+    handler: processFilesHandler
+  })
 }
 

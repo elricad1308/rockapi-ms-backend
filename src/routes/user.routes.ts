@@ -14,7 +14,7 @@ export async function userRoutes(fastify: FastifyInstance) {
   fastify.withTypeProvider<ZodTypeProvider>().route({
     method: 'post',
     url: '/create',
-    onRequest: [ fastify.authenticate ],
+    //onRequest: [ fastify.authenticate ],
     schema: createUserZodSchema,
     handler: createUserHandler
   })

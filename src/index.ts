@@ -7,6 +7,7 @@ import multipart from '@fastify/multipart'
 import { userRoutes } from './routes/user.routes.js'
 import { experimentRoutes } from './routes/experiment.routes.js'
 import { sampleRoutes } from './routes/sample.routes.js'
+import fastifySSE from '@fastify/sse'
 
 
 const server: FastifyInstance = Fastify({ 
@@ -27,6 +28,9 @@ const jwt_secret: string = process.env.JWT_SECRET ?? ''
 
 // cors
 server.register(cors)
+
+// support for sse (server side events)
+await server.register(fastifySSE.default)
 
 // multipart (for file uploads)
 await server.register(multipart, {
